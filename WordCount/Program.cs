@@ -21,23 +21,22 @@ namespace WordCount
             string filePath = Path.Combine(Directory.GetCurrentDirectory(), fileName);
             int wordCount = 0;
 
+            string fileContents = File.ReadAllText(filePath);
+
+            string[] words = fileContents.Split(new char[] { ' ', '\t', '\n', '\r' }, StringSplitOptions.RemoveEmptyEntries);
+
+            int newwordCount = words.Length;
+
+            Console.WriteLine("The new file contains {0} words.", newwordCount);
             try
             {
-                using (StreamReader sr = new StreamReader(filePath, Encoding.UTF8))
+                using (StreamReader sr = new StreamReader(filePath))
                 {
-                    int totalWordCount = 0;
                     string line;
                     while ((line = sr.ReadLine()) != null)
                     {
-                        line = line.Trim();
-                        if (line.Length > 0)
-                        {
-                            string pattern = @"[\p{L}\p{M}\p{P}\p{S}]+";
-                            int newWordCount = Regex.Matches(line, pattern).Count;
-                            totalWordCount += newWordCount;
-                        }
+                        wordCount += line.Split(' ', '\n', '\r', '\t').Length;
                     }
-                    Console.WriteLine("Total words in the file is {0}.", totalWordCount);
                 }
 
 
@@ -46,8 +45,9 @@ namespace WordCount
                 //string[] words = contents.Split(new char[] {',',  '.',  ';',  ':', ' ', '\n', '\r', '\t' }, StringSplitOptions.RemoveEmptyEntries);
                 ////string[] words = Regex.Split(contents, @"\W+");
 
-                //int countingwords = contents.Split(words, StringSplitOptions.RemoveEmptyEntries).Length;
+                var count = File.ReadAllText(filePath).Split(' ').Count();
                 //wordCount = words.Length;
+                Console.WriteLine("Word count is {0}", count);
             }
             catch (Exception ex)
             {
