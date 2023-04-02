@@ -25,6 +25,7 @@ namespace Shell
 
     public class Shell
     {
+        //This is used to store original path. It is used to find the commands after directory changes.
         public string originalPath;
 
         private Dictionary<string, string> Aliases = new Dictionary<string, string>
@@ -48,38 +49,70 @@ namespace Shell
         }
 
         public int Execute(string input)
-{
-    string[] splitInput = input.Split(' ');
-    if (Aliases.Keys.Contains(splitInput[0]))
-    {
-        var process = new Process();
-        process.StartInfo = new ProcessStartInfo(this.originalPath + "\\" + Aliases[splitInput[0]])
         {
-            UseShellExecute = false,
-        };
-        if (splitInput.Length > 1)
-        {
-            process.StartInfo.Arguments = splitInput[1];
+            string[] splitInput = input.Split(' ');
+            if (Aliases.Keys.Contains(splitInput[0]))
+            {
+                var process = new Process();
+
+                process.StartInfo = new ProcessStartInfo(this.originalPath + "\\" + Aliases[splitInput[0]])
+                {
+                    UseShellExecute = false,
+                };
+
+                if (splitInput.Length > 1)
+                {
+                    process.StartInfo.Arguments = splitInput[1];
+                }
+
+                MemoryMappedFile mmf = MemoryMappedFile.CreateOrOpen("sharedVar", 1024);
+
+                process.Start();
+                process.WaitForExit();
+
+                if (splitInput[0] == "cd ")
+                {
+                    try
+                    {
+                        MemoryMappedViewStream mmvStream = mmf.CreateViewStream(0, 1024, MemoryMappedFileAccess.ReadWrite);
+                        BinaryFormatter formatter = new BinaryFormatter();
+                        string directory = (string)formatter.Deserialize(mmvStream);
+                        Directory.SetCurrentDirectory(directory);
+                    }
+                    catch (Exception e)
+                    {
+                        //Exception should be handled but let's just do nothing here.
+                    }
+                }
+
+                return 0;
+            }
+            if (input.StartsWith("wc "))
+            {
+                string[] inputParts = input.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+                if (inputParts.Length < 2)
+                {
+                    Console.WriteLine("Please provide a file name after the 'wc' command.");
+                    return 1;
+                }
+                string fileName = string.Join(" ", inputParts.Skip(1));
+                var process = new Process
+                {
+                    StartInfo = new ProcessStartInfo(@".\WordCount.exe")
+                    {
+                        UseShellExecute = false,
+                        Arguments = "\"" + fileName + "\""
+                    }
+                };
+
+                process.Start();
+                process.WaitForExit();
+
+                return 0;
+            }
+
+            Console.WriteLine($"{input} not found");
+            return 1;
         }
-
-        MemoryMappedFile mmf = MemoryMappedFile.CreateOrOpen("sharedVar", 1024);
-
-        process.Start();
-        process.WaitForExit();
-
-        // Get the current directory from the memory mapped file
-        MemoryMappedViewStream mmvStream = mmf.CreateViewStream(0, 1024, MemoryMappedFileAccess.ReadWrite);
-        BinaryFormatter formatter = new BinaryFormatter();
-        string directory = (string)formatter.Deserialize(mmvStream);
-
-        // Set the current directory of the parent process
-        Directory.SetCurrentDirectory(directory);
-
-        return 0;
-    }
-
-    Console.WriteLine($"{input} not found");
-    return 1;
-}
     }
 }

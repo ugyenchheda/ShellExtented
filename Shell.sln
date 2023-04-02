@@ -13,6 +13,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CurrentDirectory", "Current
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ChangeDirectory", "ChangeDirectory\ChangeDirectory.csproj", "{EDC482FA-F4D4-4816-929C-E4230D1D52C9}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WordCount", "WordCount\WordCount.csproj", "{F4682E4F-B306-493E-B03B-60422F7859AD}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -39,6 +41,10 @@ Global
 		{EDC482FA-F4D4-4816-929C-E4230D1D52C9}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{EDC482FA-F4D4-4816-929C-E4230D1D52C9}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{EDC482FA-F4D4-4816-929C-E4230D1D52C9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F4682E4F-B306-493E-B03B-60422F7859AD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F4682E4F-B306-493E-B03B-60422F7859AD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F4682E4F-B306-493E-B03B-60422F7859AD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F4682E4F-B306-493E-B03B-60422F7859AD}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
