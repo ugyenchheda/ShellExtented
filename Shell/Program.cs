@@ -25,7 +25,6 @@ namespace Shell
 
     public class Shell
     {
-        //This is used to store original path. It is used to find the commands after directory changes.
         public string originalPath;
 
         private Dictionary<string, string> Aliases = new Dictionary<string, string>
@@ -49,60 +48,38 @@ namespace Shell
         }
 
         public int Execute(string input)
+{
+    string[] splitInput = input.Split(' ');
+    if (Aliases.Keys.Contains(splitInput[0]))
+    {
+        var process = new Process();
+        process.StartInfo = new ProcessStartInfo(this.originalPath + "\\" + Aliases[splitInput[0]])
         {
-            //Separate command and arguments
-            string[] splitInput = input.Split(' ');
-            if (Aliases.Keys.Contains(splitInput[0]))
-            {
-                var process = new Process();
-                //TODO: Test print
-                //Console.WriteLine(this.originalPath + Aliases[splitInput[0]]);
-                process.StartInfo = new ProcessStartInfo(this.originalPath + "\\" + Aliases[splitInput[0]])
-                {
-                    UseShellExecute = false,
-                };
-
-                //Just check if there are arguments and pass the first to the application
-                //This is bit "dirty" way as all the arguments should be usually passed
-                if (splitInput.Length > 1)
-                {
-                    process.StartInfo.Arguments = splitInput[1];
-                }
-
-                //MemoryMappedFile is used for interprocess communication
-                //It works but looks bit clumsy way. Mutex should be used to protect the value.
-                MemoryMappedFile mmf = MemoryMappedFile.CreateOrOpen("sharedVar", 1024);
-
-                process.Start();
-                process.WaitForExit();
-
-                //Set directory only in case of cd command
-                if (splitInput[0] == "cd ")
-                {
-                    try
-                    {
-                        //Read the MemoryMappedFile and set directory based on it
-                        MemoryMappedViewStream mmvStream = mmf.CreateViewStream(0, 1024, MemoryMappedFileAccess.ReadWrite);
-                        //Binary formatter is used to deserialize the shared stream
-                        BinaryFormatter formatter = new BinaryFormatter();
-                        string directory = (string)formatter.Deserialize(mmvStream);
-                        //TODO: a test print
-                        //Console.WriteLine(directory);
-                        //Set the directory base to input
-                        Directory.SetCurrentDirectory(directory);
-                    }
-                    catch (Exception e)
-                    {
-                        //Exception should be handled but let's just do nothing here.
-                        //We end up here if directory change failed and those are handled in ChangeDirectory process.
-                    }
-                }
-                
-                return 0;
-            }
-
-            Console.WriteLine($"{input} not found");
-            return 1;
+            UseShellExecute = false,
+        };
+        if (splitInput.Length > 1)
+        {
+            process.StartInfo.Arguments = splitInput[1];
         }
+
+        MemoryMappedFile mmf = MemoryMappedFile.CreateOrOpen("sharedVar", 1024);
+
+        process.Start();
+        process.WaitForExit();
+
+        // Get the current directory from the memory mapped file
+        MemoryMappedViewStream mmvStream = mmf.CreateViewStream(0, 1024, MemoryMappedFileAccess.ReadWrite);
+        BinaryFormatter formatter = new BinaryFormatter();
+        string directory = (string)formatter.Deserialize(mmvStream);
+
+        // Set the current directory of the parent process
+        Directory.SetCurrentDirectory(directory);
+
+        return 0;
+    }
+
+    Console.WriteLine($"{input} not found");
+    return 1;
+}
     }
 }
