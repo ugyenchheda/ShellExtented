@@ -15,10 +15,8 @@ namespace WordCount
             string filePath = Path.Combine(Directory.GetCurrentDirectory(), fileName);
 
             string fileContents = File.ReadAllText(filePath);
-
             string[] words = fileContents.Split(new char[] { ' ', '\t', '\n', '\r' }, StringSplitOptions.RemoveEmptyEntries);
-
-            int newwordCount = words.Length;
+            //int newwordCount = words.Length;
 
             Console.WriteLine("My solution: Word Count:  {0}.", newwordCount);
             try
