@@ -22,7 +22,6 @@ namespace Shell
             shell.Run();
         }
     }
-
     public class Shell
     {
         //This is used to store original path. It is used to find the commands after directory changes.
@@ -35,7 +34,6 @@ namespace Shell
             { "pwd", @"CurrentDirectory.exe" },
             { "cd", @"ChangeDirectory.exe" }
         };
-
         public void Run()
         {
             string input = null;
@@ -47,7 +45,6 @@ namespace Shell
                 Execute(input);
             } while (input != "exit");
         }
-
         public int Execute(string input)
         {
             string[] splitInput = input.Split(' ');
@@ -110,7 +107,6 @@ namespace Shell
 
                 return 0;
             }
-
             Console.WriteLine($"{input} not found");
             return 1;
         }
