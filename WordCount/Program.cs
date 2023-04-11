@@ -6,11 +6,8 @@ namespace WordCount
 {
     internal class Program
     {
-
         static void Main(string[] args)
         {
-
-
             string fileName = args[0];
             string filePath = Path.Combine(Directory.GetCurrentDirectory(), fileName);
             string fileContents = File.ReadAllText(filePath);
@@ -31,9 +28,6 @@ namespace WordCount
             {
                 Console.WriteLine("Error reading the file: " + ex.Message);
             }
-
-
-
 
             Console.ReadKey();
         }
